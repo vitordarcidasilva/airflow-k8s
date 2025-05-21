@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: airflow
+  namespace: argocd
+spec:
+  destination:
+    namespace: airflow
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: airflow
+    repoURL: https://airflow.apache.org/
+    targetRevision: 1.16.0
+    helm:
+      valueFiles:
+        - values.yaml
+      values: |
+        {{- .Files.Get "airflow-values.yaml" | nindent 8 }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true 

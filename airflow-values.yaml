@@ -1,0 +1,84 @@
+# Using the latest stable Airflow version 3.0.0
+defaultAirflowVersion: "3.0.0"
+executor: "KubernetesExecutor"
+
+# Configuração geral do Airflow
+fernetKeySecretName: ~
+webserverSecretKey: ~
+
+# Configuração de recursos para componentes principais
+webserver:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  defaultUser:
+    enabled: true
+    role: Admin
+    username: admin
+    email: admin@example.com
+  livenessProbe:
+    initialDelaySeconds: 60
+    timeoutSeconds: 20
+    failureThreshold: 5
+  readinessProbe:
+    initialDelaySeconds: 30
+    timeoutSeconds: 20
+    failureThreshold: 5
+    
+scheduler:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  livenessProbe:
+    initialDelaySeconds: 60
+    timeoutSeconds: 20
+    failureThreshold: 5
+
+workers:
+  enabled: false
+
+# Para habilitar o log persistente
+logs:
+  persistence:
+    enabled: true
+    size: 5Gi
+
+# Configuração para DAGs
+dags:
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClassName: ~
+  gitSync:
+    enabled: false
+
+# Configuração do banco de dados
+postgresql:
+  enabled: true
+
+# Redis não é necessário para KubernetesExecutor
+redis:
+  enabled: false
+
+# Configurações de segurança
+securityContext:
+  runAsUser: 50000
+  fsGroup: 50000
+
+# Configuração para criação de usuário e migração de banco de dados
+# Para usar com ArgoCD, estas configurações são recomendadas
+createUserJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+
+migrateDatabaseJob:
+  useHelmHooks: false
+  applyCustomEnv: false 
